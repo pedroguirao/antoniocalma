@@ -4,7 +4,7 @@
 
     <record id="website_sale_products_inh" model="ir.ui.view">
         <field name="name">website.shop.inh</field>
-        <field name="model">products</field>
+        <field name="model">grid</field>
         <field name="inherit_id" ref="website_sale.products"/>
         <field name="arch" type="xml">
             <xpath expr='//table[@width="100%"]' position='replace'>
@@ -41,7 +41,7 @@
 
     <record id="website_sale_products__item_inh" model="ir.ui.view">
         <field name="name">website.shop.item.inh</field>
-        <field name="model">products</field>
+        <field name="model">grid</field>
         <field name="inherit_id" ref="website_sale.products_item"/>
         <field name="arch" type="xml">
             <xpath expr='//section' position='replace'>
