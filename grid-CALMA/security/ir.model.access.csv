@@ -1,4 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+acces_crowfunding_opciones,crowfunding_opciones,model_crowfunding_opciones,,1,1,1,1
+acces_product_template,product_template,model_product_template,,1,1,1,1
 acces_products,products,model_products,,1,1,1,1
-acces_products_item,products_item,model_products_item,,1,1,1,1
-acces_grid,grid,model_grid,,1,1,1,1
