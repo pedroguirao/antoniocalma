@@ -1,0 +1,598 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <template id="website_wallet_assets" inherit_id="website.assets_frontend" name="Wallet Assets">
+      <xpath expr="." position="inside">
+        <link href="/website_wallet/static/src/css/website_wallet.css" rel="stylesheet" type="text/css" />
+        <script src="/website_wallet/static/src/js/wallet.js"></script>
+      </xpath>
+    </template>
+
+    <!--<template id="wallet_link" name="Wallet Link" inherit_id="portal.frontend_layout">
+      <xpath expr="//a[@id='o_logout']" position="before">
+        <a href="/wallet/add/money" role="menuitem" class="dropdown-item" t-if="website.user_id != user_id">Wallet Balance: 
+          <t t-if="website_sale_order and website_sale_order.wallet_txn_id">
+            <t t-esc="website_sale_order.partner_wallet_balance - website_sale_order.wallet_txn_id.amount" t-options='{"widget": "monetary", "display_currency": website.currency_id}' />
+          </t>
+          <t t-if="website_sale_order and not website_sale_order.wallet_txn_id">
+            <t t-esc="user_id.partner_id.wallet_balance" t-options='{"widget": "monetary", "display_currency": website.currency_id}' />
+          </t>
+          <t t-if="not website_sale_order">
+            <t t-esc="user_id.partner_id.wallet_balance" t-options='{"widget": "monetary", "display_currency": website.currency_id}' />
+          </t>
+        </a>
+        <a href="/wallet/transaction/history" role="menuitem" class="dropdown-item" t-if="website.user_id != user_id">Wallet Transaction History</a>
+      </xpath>
+    </template>-->
+    <!-- Custom -->
+    <template id="wallet_link" name="Wallet Link" inherit_id="portal.frontend_layout">
+      <xpath expr="//a[@id='o_logout']" position="before">
+        <a href="/wallet/add/money" role="menuitem" class="dropdown-item" t-if="website.user_id != user_id">Wallet Balance:
+          <t t-if="website_sale_order and website_sale_order.wallet_txn_id">
+            <t t-esc="website_sale_order.partner_wallet_balance - website_sale_order.wallet_txn_id.amount" t-options='{"widget": "monetary", "display_currency": website.currency_id}' />
+          </t>
+          <t t-if="website_sale_order and not website_sale_order.wallet_txn_id">
+            <t t-esc="user_id.partner_id.wallet_balance" t-options='{"widget": "monetary", "display_currency": website.currency_id}' />
+          </t>
+          <t t-if="not website_sale_order">
+            <t t-esc="user_id.partner_id.wallet_balance" t-options='{"widget": "monetary", "display_currency": website.currency_id}' />
+          </t>
+        </a>
+        <a href="/wallet/transaction/history" role="menuitem" class="dropdown-item" t-if="website.user_id != user_id">Wallet Transaction History</a>
+        <a href="/wallet/add/account" role="menuitem" class="dropdown-item" t-if="website.user_id != user_id">Cuentas bancarias</a>
+      </xpath>
+    </template>
+
+
+    <!-- Cuentas bancarias -->
+
+     <template id="add_account" name="Add Account">
+      <t t-call="website.layout">
+        <div class="container wallet">
+          <div class="row">
+            <div class="col-md-12 mt8">
+              <h3 class="heading_title mt16 text-center">Cuentas Bancarias</h3>
+            </div>
+            <div class="col-md-12 col-sm-12 col-xs-12 mt16 mb32 lb_outer">
+              <div class="col-md-6 col-sm-12 col-xs-12 mt16 mb16 mx-auto">
+                <h4 class="wallet-balance text-center">
+                  Wallet Balance:
+                  <span class="amount">
+                    <t t-esc="wallet_bal" />
+                  </span>
+                </h4 >
+
+                <div class="alert alert-danger" t-if="error">
+                  <p>
+                    <t t-raw="error" />
+                  </p>
+                </div>
+                <table class="w3-table">
+                  <thead>
+                    <tr>
+                      <th class="wallet-balance text-center" colspan="3"><h4> Añadir Cuenta Bancaria</h4> </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="wallet-balance">
+                      <td colspan="6"> <strong>IBAN</strong></td>
+                      <td colspan="6"> <strong>Titular</strong></td>
+
+                    </tr>
+                    <tr class="wallet-balance">
+                      <td colspan="6"> <input type="text" required="true" placeholder="Número de cuenta" value="" class="account" id="add_account" name="add_account" /></td>
+                      <td colspan="6"> <input type="text" required="true" placeholder="Titular" value="" class="account_user" id="add_account_user" name="add_account_user" /></td>
+                    </tr>
+                    <tr class="wallet-balance">
+                      <td colspan="3"> <strong>Dirección</strong> <input type="text" required="true" placeholder="Dirección" value="" class="account_addr" id="add_account_addr" name="add_account_addr" /></td>
+                    </tr>
+
+
+
+                  </tbody>
+                </table>
+                  <div class="payment-options">
+                    <label class="lbl">Pay with</label>
+                    <div class="radio-box">
+                      <div class="radio radio-primary" t-foreach="acquirers" t-as="acquirer">
+                        <input type="radio" name="payment_acquirer" t-attf-id="radio#{acquirer_index + 1}" t-att-value="acquirer.id" checked="checked" t-if="acquirer_first" />
+                        <input type="radio" name="payment_acquirer" t-attf-id="radio#{acquirer_index + 1}" t-att-value="acquirer.id" t-if="not acquirer_first" />
+                        <label t-attf-for="radio#{acquirer_index + 1}">
+                          <t t-esc="acquirer.name" />
+                        </label>
+                      </div>
+                      <div class="radio radio-primary" t-if="stored_card">
+                        <input type="radio" name="payment_acquirer" id="radio15" value="stored_card" t-att-data-store_card_id="stored_card.id" />
+                        <label for="radio15">Stored Card (
+                          <t t-esc="stored_card.name.split(' ')[0]" />)</label>
+                      </div>
+                    </div>
+
+                    <div id="acquirers_list">
+                      <t t-foreach="form_acquirers or []" t-as="acquirer">
+                        <t t-if="acquirer.provider != 'payflow_pro'">
+                          <div t-att-data-id="acquirer.id" t-att-class="'oe_sale_acquirer_button' if acquirer_first else 'oe_sale_acquirer_button d-none'">
+                            <form action="/wallet/add/money/quantity" method="post" t-att-class="acquirer.provider">
+                              <!--<div t-raw="acquirer.form"/>-->
+                              <div class="action-buttons" id="addCashActionBtns">
+                                <input type="hidden" name="payment_acquirer" t-att-value="acquirer.id" />
+                                <input type="hidden" name="amount" />
+                                <input type="submit" value="Proceed to pay" name="submit" class="btn btn-primary" />
+                              </div>
+                              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                              <div t-field="acquirer.pre_msg"/>
+                            </form>
+                          </div>
+                        </t>
+
+
+                      </t>
+                    </div>
+
+
+                  </div>
+              </div>
+              <div class="clearfix" />
+            </div>
+          </div>
+        </div>
+      </t>
+    </template>
+
+
+
+    <template id="add_money" name="Add Money">
+      <t t-call="website.layout">
+        <div class="container wallet">
+          <div class="row">
+            <div class="col-md-12 mt8">
+              <h3 class="heading_title mt16 text-center">Add Money</h3>
+            </div>
+            <div class="col-md-12 col-sm-12 col-xs-12 mt16 mb32 lb_outer">
+              <div class="col-md-6 col-sm-12 col-xs-12 mt16 mb16 mx-auto">
+                <h4 class="wallet-balance text-center">
+                  Wallet Balance: 
+                  <span class="amount">
+                    <t t-esc="wallet_bal" t-options='{"widget": "monetary", "display_currency": website.currency_id}' />
+                  </span>
+                </h4>
+
+                <div class="alert alert-danger" t-if="error">
+                  <p>
+                    <t t-raw="error" />
+                  </p>
+                </div>
+                  <input type="text" required="true" placeholder="Enter amount" value="" class="add_amount" id="add_amount" name="add_amount" />
+                  <div class="payment-options">
+                    <label class="lbl">Pay with</label>
+                    <div class="radio-box">
+                      <div class="radio radio-primary" t-foreach="acquirers" t-as="acquirer">
+                        <input type="radio" name="payment_acquirer" t-attf-id="radio#{acquirer_index + 1}" t-att-value="acquirer.id" checked="checked" t-if="acquirer_first" />
+                        <input type="radio" name="payment_acquirer" t-attf-id="radio#{acquirer_index + 1}" t-att-value="acquirer.id" t-if="not acquirer_first" />
+                        <label t-attf-for="radio#{acquirer_index + 1}">
+                          <t t-esc="acquirer.name" />
+                        </label>
+                      </div>
+                      <div class="radio radio-primary" t-if="stored_card">
+                        <input type="radio" name="payment_acquirer" id="radio15" value="stored_card" t-att-data-store_card_id="stored_card.id" />
+                        <label for="radio15">Stored Card (
+                          <t t-esc="stored_card.name.split(' ')[0]" />)</label>
+                      </div>
+                    </div>
+
+                    <div id="acquirers_list">
+                      <t t-foreach="form_acquirers or []" t-as="acquirer">
+                        <t t-if="acquirer.provider != 'payflow_pro'">
+                          <div t-att-data-id="acquirer.id" t-att-class="'oe_sale_acquirer_button' if acquirer_first else 'oe_sale_acquirer_button d-none'">
+                            <form action="/wallet/add/money/quantity" method="post" t-att-class="acquirer.provider">
+                              <!--<div t-raw="acquirer.form"/>-->
+                              <div class="action-buttons" id="addCashActionBtns">
+                                <input type="hidden" name="payment_acquirer" t-att-value="acquirer.id" />
+                                <input type="hidden" name="amount" />
+                                <input type="submit" value="Proceed to pay" name="submit" class="btn btn-primary" />
+                              </div>
+                              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                              <div t-field="acquirer.pre_msg"/>
+                            </form>
+                          </div>
+                        </t>
+
+                        <t t-if="acquirer.provider == 'payflow_pro'">
+                          <div t-att-data-id="acquirer.id" t-att-class="'oe_sale_acquirer_button' if acquirer_first else 'oe_sale_acquirer_button d-none'">
+                            <form action="/wallet/add/money/transaction" method="post" id="add_amount" name="add_amount">
+                              <div class="row">
+                                <div class="form-group col-md-8">
+                                  <label class="control-label" for="cc_number">Card number</label>
+                                  <input type="tel" name="cc_number" id="cc_number" class="form-control" placeholder="&#8226;&#8226;&#8226;&#8226;&#32;&#8226;&#8226;&#8226;&#8226;&#32;&#8226;&#8226;&#8226;&#8226;&#32;&#8226;&#8226;&#8226;&#8226;&#32;" />
+                                  <div class="card_placeholder"></div>
+                                  <div class="visa"></div>
+                                  <input type="hidden" name="cc_brand" value="" />
+                                </div>
+                                <div class="form-group col-md-4">
+                                  <label class="control-label" for="cc_cvv">CVV</label>
+                                  <input type="text" name="cc_cvv" id="cc_cvv" class="form-control" maxlength="3" placeholder="CVV" />
+                                </div>
+                                <div class="form-group col-md-7">
+                                  <label class="control-label" for="cc_holder_name">Name</label>
+                                  <input type="text" name="cc_holder_name" id="cc_holder_name" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-5">
+                                  <label class="control-label" for="cc_expires_mm">Expires</label>
+                                  <input type="text" name="cc_expiry" id="cc_expiry" class="form-control" maxlength="7" placeholder="MM / YY" />
+                                </div>
+                                <div class="form-group col-md-12 checkbox">
+                                  <label>
+                                    <input type="checkbox" name="card_save" /> Save this card for faster checkout</label>
+                                </div>
+                                <div class="clearfix" />
+                              </div>
+                              <div class="action-buttons" id="addCashActionBtns">
+                                <input type="hidden" name="payment_acquirer" t-att-value="acquirer.id" />
+                                <input type="hidden" name="amount" />
+                                <input type="submit" value="Proceed to pay" name="submit" class="btn btn-primary" />
+                              </div>
+                              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                            </form>
+                          </div>
+                        </t>
+                      </t>
+
+                      <t t-if="stored_card">
+                        <div id="stored_card" t-att-class="'oe_sale_acquirer_button' if acquirer_first else 'oe_sale_acquirer_button d-none'">
+                          <form action="/wallet/add/money/transaction" method="post" id="add_amount" name="add_amount">
+                            <div class="action-buttons" id="addCashActionBtns">
+                              <input type="hidden" name="amount" />
+                              <input type="hidden" name="payment_acquirer" value="stored_card"/>
+                              <input type="hidden" name="stored_card_id" value="" />
+                              <input type="submit" value="Proceed to pay" name="submit" class="btn btn-primary" />
+                            </div>
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                          </form>
+                        </div>
+                      </t>
+                    </div>
+
+                  </div>
+              </div>
+              <div class="clearfix" />
+            </div>
+          </div>
+        </div>
+      </t>
+    </template>
+
+    <template id="add_money_quantity" name="Add Money Quantity">
+      <t t-call="website.layout">
+        <div class="container wallet">
+          <div class="row">
+            <div class="col-md-12 mt8">
+              <h3 class="heading_title mt16 text-center">Add Money</h3>
+            </div>
+            <div class="col-md-12 col-sm-12 col-xs-12 mt16 mb32 lb_outer">
+              <div class="col-md-6 col-sm-12 col-xs-12 mt16 mb16 mx-auto">
+                <h4 class="wallet-balance text-center">
+                  Wallet Balance:
+                  <span class="amount">
+                    <t t-esc="wallet_bal" t-options='{"widget": "monetary", "display_currency": website.currency_id}' />
+                  </span>
+                </h4>
+
+                <h4 class="wallet-balance text-center">
+                  Fondos a solicitar:
+                  <span class="amount">
+                    <t t-esc="amount" t-options='{"widget": "monetary", "display_currency": website.currency_id}' />
+                  </span>
+                </h4>
+
+                <div class="alert alert-danger" t-if="error">
+                  <p>
+                    <t t-raw="error" />
+                  </p>
+                </div>
+                  <!--<input type="text" required="true" placeholder="Enter amount" value="" class="add_amount" id="add_amount" name="add_amount" />-->
+                  <div class="payment-options">
+                    <label class="lbl">Pay with</label>
+                    <div class="radio-box">
+                      <div class="radio radio-primary" t-foreach="acquirers" t-as="acquirer">
+                        <input type="radio" name="payment_acquirer" t-attf-id="radio#{acquirer_index + 1}" t-att-value="acquirer.id" checked="checked" t-if="acquirer_first" />
+                        <input type="radio" name="payment_acquirer" t-attf-id="radio#{acquirer_index + 1}" t-att-value="acquirer.id" t-if="not acquirer_first" />
+                        <label t-attf-for="radio#{acquirer_index + 1}">
+                          <t t-esc="acquirer.name" />
+                        </label>
+                      </div>
+                      <div class="radio radio-primary" t-if="stored_card">
+                        <input type="radio" name="payment_acquirer" id="radio15" value="stored_card" t-att-data-store_card_id="stored_card.id" />
+                        <label for="radio15">Stored Card (
+                          <t t-esc="stored_card.name.split(' ')[0]" />)</label>
+                      </div>
+                    </div>
+
+                    <div id="acquirers_list">
+                      <t t-foreach="form_acquirers or []" t-as="acquirer">
+                        <t t-if="acquirer.provider != 'payflow_pro'">
+                          <div t-att-data-id="acquirer.id" t-att-class="'oe_sale_acquirer_button' if acquirer_first else 'oe_sale_acquirer_button d-none'">
+                            <form action="/wallet/add/money/transaction" method="post" t-att-class="acquirer.provider">
+                              <div t-raw="acquirer.form"/>
+                              <div class="action-buttons" id="addCashActionBtns">
+                                <input type="hidden" name="payment_acquirer" t-att-value="acquirer.id" />
+                                <input type="hidden" name="amount" />
+                                <input type="submit" value="Proceed to pay" name="submit" class="btn btn-primary" />
+                              </div>
+                              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                              <div t-field="acquirer.pre_msg"/>
+                            </form>
+                          </div>
+                        </t>
+
+                        <t t-if="acquirer.provider == 'payflow_pro'">
+                          <div t-att-data-id="acquirer.id" t-att-class="'oe_sale_acquirer_button' if acquirer_first else 'oe_sale_acquirer_button d-none'">
+                            <form action="/wallet/add/money/transaction" method="post" id="add_amount" name="add_amount">
+                              <div class="row">
+                                <div class="form-group col-md-8">
+                                  <label class="control-label" for="cc_number">Card number</label>
+                                  <input type="tel" name="cc_number" id="cc_number" class="form-control" placeholder="&#8226;&#8226;&#8226;&#8226;&#32;&#8226;&#8226;&#8226;&#8226;&#32;&#8226;&#8226;&#8226;&#8226;&#32;&#8226;&#8226;&#8226;&#8226;&#32;" />
+                                  <div class="card_placeholder"></div>
+                                  <div class="visa"></div>
+                                  <input type="hidden" name="cc_brand" value="" />
+                                </div>
+                                <div class="form-group col-md-4">
+                                  <label class="control-label" for="cc_cvv">CVV</label>
+                                  <input type="text" name="cc_cvv" id="cc_cvv" class="form-control" maxlength="3" placeholder="CVV" />
+                                </div>
+                                <div class="form-group col-md-7">
+                                  <label class="control-label" for="cc_holder_name">Name</label>
+                                  <input type="text" name="cc_holder_name" id="cc_holder_name" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-5">
+                                  <label class="control-label" for="cc_expires_mm">Expires</label>
+                                  <input type="text" name="cc_expiry" id="cc_expiry" class="form-control" maxlength="7" placeholder="MM / YY" />
+                                </div>
+                                <div class="form-group col-md-12 checkbox">
+                                  <label>
+                                    <input type="checkbox" name="card_save" /> Save this card for faster checkout</label>
+                                </div>
+                                <div class="clearfix" />
+                              </div>
+                              <div class="action-buttons" id="addCashActionBtns">
+                                <input type="hidden" name="payment_acquirer" t-att-value="acquirer.id" />
+                                <input type="hidden" name="amount" />
+                                <input type="submit" value="Proceed to pay" name="submit" class="btn btn-primary" />
+                              </div>
+                              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                            </form>
+                          </div>
+                        </t>
+                      </t>
+
+                      <t t-if="stored_card">
+                        <div id="stored_card" t-att-class="'oe_sale_acquirer_button' if acquirer_first else 'oe_sale_acquirer_button d-none'">
+                          <form action="/wallet/add/money/transaction" method="post" id="add_amount" name="add_amount">
+                            <div class="action-buttons" id="addCashActionBtns">
+                              <input type="hidden" name="amount" />
+                              <input type="hidden" name="payment_acquirer" value="stored_card"/>
+                              <input type="hidden" name="stored_card_id" value="" />
+                              <input type="submit" value="Proceed to pay" name="submit" class="btn btn-primary" />
+                            </div>
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                          </form>
+                        </div>
+                      </t>
+                    </div>
+
+                  </div>
+              </div>
+              <div class="clearfix" />
+            </div>
+          </div>
+        </div>
+      </t>
+    </template>
+
+    <template id="add_money_success" name="Add Money Success">
+      <t t-call="website.layout">
+        <div class="container wallet">
+          <div class="row">
+            <div class="col-md-12 mt8">
+              <h3 class="heading_title mt16 text-center">Add Money</h3>
+            </div>
+            <div class="col-md-12 col-sm-12 col-xs-12 mt16 mb32 lb_outer">
+              <div class="col-md-6 col-sm-12 col-xs-12 mt16 mb16 mx-auto">
+                <h4 class="wallet-balance text-center">
+                  Wallet Balance: 
+                  <span class="amount">
+                    <t t-esc="wallet_bal" t-options='{"widget": "monetary", "display_currency": website.currency_id}' />
+                  </span>
+                </h4>
+                <div class="alert alert-success" t-if="tx_state == 'Done'">
+                  <strong>Success!</strong>
+                  <br />
+                  <br /> Your payment successfully added into wallet.
+                </div>
+                <div class="alert alert-warning" t-if="tx_state != 'Done'">
+                  <strong>Error!</strong>
+                  <br />
+                  <br /> Your payment not received at our end.
+                </div>
+                <p class="mt32 tx_heading">Transaction Details</p>
+                <table class="table table-striped mb64" width="100%">
+                  <tbody>
+                    <tr>
+                      <td>Amount</td>
+                      <td>
+                        <t t-esc="tx_amount" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Transaction Number</td>
+                      <td>
+                        <t t-esc="tx_reference" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Time</td>
+                      <td>
+                        <t t-esc="tx_time" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Payment State</td>
+                      <td>
+                        <t t-esc="tx_state" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Payment Method</td>
+                      <td>
+                        <t t-esc="tx_acquirer.name" />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="clearfix" />
+            </div>
+          </div>
+        </div>
+      </t>
+    </template>
+
+    <template id="wallet_transaction_history" name="Wallet Transaction">
+      <t t-call="website.layout">
+        <div class="container wallet">
+          <div class="row">
+            <div class="col-md-12 mt8">
+              <h3 class="heading_title mt16 text-center">Wallet Transaction</h3>
+            </div>
+
+            <div class="container mt16 mb32">
+              <h4>Wallet Balance: 
+                <span class="amount">
+                  <t t-esc="partner.wallet_balance" t-options='{"widget": "monetary", "display_currency": website.currency_id}' />
+                </span>
+              </h4>
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th class="text-center">Reference</th>
+                    <th class="text-center">Wallet Process</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="partner.wallet_transaction" t-as="transaction">
+                    <td>
+                      <t t-if="transaction.date">
+                        <span t-field="transaction.date" t-options="{'widget': 'date'}"/>&amp;nbsp;
+                        <span class='d-none d-md-inline' t-field="transaction.date" t-options="{'time_only': True}"/>
+                      </t>
+                      <t t-if="not transaction.date">
+                        <span t-field="transaction.create_date" t-options="{'widget': 'date'}"/>&amp;nbsp;
+                        <span class='d-none d-md-inline' t-field="transaction.create_date" t-options="{'time_only': True}"/>
+                      </t>        
+                    </td>
+                    <td class="text-center"><span t-field="transaction.reference"/></td>
+                    <td class="text-center"><span t-esc="transaction.wallet_type and transaction.wallet_type.capitalize()"/></td>
+                    <td class="text-center"><span t-esc="transaction.state and transaction.state.capitalize()"/></td>
+                    <td class="text-right"><span t-field="transaction.amount"/></td>
+                  </tr>
+                  <tr t-if="not partner.wallet_transaction">
+                    <td colspan="5" class="text-center">No any transaction find in your account.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </t>
+    </template>
+    <template id="wallet_btn_payment" inherit_id="website_sale.payment" name="Wallet Button Payment Page">
+      <xpath expr="//div[@id='payment_method']" position="before">
+        <div class="row" id="wallet_boxes">
+          <div class="col-lg-8 col-sm-9 mt8 mb16" t-if="website_sale_order and website_sale_order.wallet_txn_id">
+            <h4>Pay using Wallet</h4>
+            <p>
+              <b>Wallet Balance: </b>
+              <span class="badge">
+                <span class="oe_currency_value">
+                  <t t-esc="website_sale_order.partner_wallet_balance - website_sale_order.wallet_txn_id.amount" t-options='{"widget": "monetary", "display_currency": website_sale_order.pricelist_id.currency_id}' />
+                </span>
+              </span>
+              You paid
+              <t t-esc="website_sale_order.wallet_txn_id.amount" />
+              <t t-esc="website_sale_order.currency_id.symbol" /> amount from Wallet.
+            </p>
+          </div>
+          <div class="col-lg-8 col-sm-9 mt8 mb16" t-if="website_sale_order and not website_sale_order.wallet_txn_id and website_sale_order.partner_wallet_balance">
+            <h4>Pay using Wallet</h4>
+            <p>
+              <b>Wallet Balance: </b>
+              <span class="badge">
+                <span class="oe_currency_value">
+                  <t t-esc="website_sale_order.partner_wallet_balance" t-options='{"widget": "monetary", "display_currency": website.currency_id}' />
+                </span>
+              </span>
+              Pay by
+              <u>
+                <i>
+                  <a href="/shop/wallet/pay" style="cursor: pointer;">Wallet</a>
+                </i>
+              </u>
+            </p>
+          </div>
+        </div>
+      </xpath>
+    </template>
+    <template id="wallet_total" inherit_id="website_sale.total" name="Wallet Amount Summary">
+      <xpath expr="//tr[@id='order_total_taxes']" position="after">
+        <tr id="order_total order_wallet_pay" t-if="website_sale_order.wallet_txn_id">
+          <td class="text-right noborder"><strong>Wallet Paid:</strong></td>
+          <td class="text-xl-right noborder">
+            <span t-esc="-website_sale_order.wallet_txn_id.amount" t-options='{"widget": "monetary", "display_currency": website.currency_id}' />
+          </td>
+        </tr>
+      </xpath>
+
+      <xpath expr="//tr[@id='order_total']" position="replace">
+        <tr id="order_total">
+          <td class="text-right"><strong>Total:</strong></td>
+          <td class="text-xl-right">
+            <strong t-esc="website_sale_order.amount_total - website_sale_order.wallet_txn_id.amount" t-options='{"widget": "monetary", "display_currency": website.currency_id}' t-if="website_sale_order.wallet_txn_id"/>
+            <strong t-field="website_sale_order.amount_total" t-options='{"widget": "monetary", "display_currency": website.currency_id}' t-if="not website_sale_order.wallet_txn_id"/>
+          </td>
+        </tr>
+      </xpath>
+    </template>
+    <template id="wallet_confirmation" inherit_id="website_sale.confirmation" name="Wallet Confirmation">
+      <xpath expr="//table[hasclass('table')]" position="replace">
+        <table class="table">
+          <tbody>
+            <tr>
+              <td colspan="2">
+                <strong t-esc="order.get_portal_last_transaction().acquirer_id.name" />
+              </td>
+              <td class="text-right" width="100">
+                <strong>Total:</strong>
+              </td>
+              <td class="text-right" width="100">
+                  <strong t-field="order.get_portal_last_transaction().amount" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}" />
+              </td>
+            </tr>
+            <tr t-if="order.wallet_txn_id">
+              <td colspan="2">
+                <strong>Wallet:</strong> 
+              </td>
+              <td class="text-right" width="100">
+                <strong>Total:</strong>
+              </td>
+              <td class="text-right" width="100">
+                <strong t-field="order.wallet_txn_id.amount" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </xpath>
+    </template>
+  </data>
+</openerp>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+<data noupdate="1">
+    <!-- Sequences for sale.order -->
+    <record id="seq_wallet" model="ir.sequence">
+        <field name="name">Payment Transaction</field>
+        <field name="code">payment.wallet.transaction</field>
+        <field name="prefix">WALLET</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="payment_acquirer_payflow_pro" model="payment.acquirer">
+        <field name="name">Credit / Debit Card</field>
+        <field name="image" type="base64" file="website_wallet/static/src/img/payflow_pro_icon.png"/>
+        <field name="provider">payflow_pro</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="view_template_id" ref="payflow_pro_acquirer_button"/>
+        <field name="registration_view_template_id" ref="payflow_pro_s2s_form"/>
+        <field name="environment">test</field>
+        <field name="pre_msg"><![CDATA[
+<p>Your payment will be capture after clicking on the payment button.</p>]]></field>
+        <field name="payflow_partner">dummy</field>
+        <field name="payflow_vendor">dummy</field>
+        <field name="payflow_username">dummy</field>
+        <field name="payflow_password">dummy</field>
+        <field name="description" type="html">
+            <p>
+                A payment gateway to accept on-line payments.
+            </p>
+            <ul class="list-inline">
+                <li><i class="fa fa-check"/>eCommerce</li>
+                <li><i class="fa fa-check"/>Online Payment</li>
+                <li><i class="fa fa-check"/>Payment Status Tracking</li>
+            </ul>
+        </field>
+        <field name="payment_icon_ids" eval='[(6, 0, [
+            ref("payment.payment_icon_cc_visa"),
+            ref("payment.payment_icon_cc_mastercard"),
+        ])]'/>
+    </record>
+
+</data>
+</openerp>

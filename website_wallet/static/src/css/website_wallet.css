@@ -1,0 +1,185 @@
+#add_amount div.card_placeholder {
+    top: 37px !important;
+}
+div.header_wallet {
+    padding: 5px 15px;
+    border-radius: 2px;
+    background: #fff;
+    border: 1px solid #dff0d8;
+    max-width: 290px;
+    float: right;
+    margin: 10px 15px 5px;
+    text-align: center;
+}
+div.header_wallet div.bal {
+    display: inline-block;
+    vertical-align: middle;
+    width: 97%;
+    text-align: center;
+}
+div.header_wallet div.bal span.balstr {
+    font-size: 12px;
+    color: #969695;
+    font-weight: lighter;
+    line-height: 1;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+div.header_wallet div.bal span.balamt {
+    display: inline-block;
+    font-size: 20px;
+    line-height: 1;
+    color: #000;
+}
+
+.wallet .lb_outer {
+    border: 1px solid #eee;
+}
+.wallet h4.wallet-balance {
+    font-weight: 400;
+    font-size: 1.375em;
+    color: #584938;
+    border-bottom: none;
+    margin-bottom: 40px;
+    color: #333;
+}
+
+.wallet h4.wallet-balance .amount {
+    margin-left: 7px;
+    border-bottom: none;
+    font-size: 1.375em;
+    font-weight: 400;
+}
+
+.wallet .add_amount {
+    border: 1px solid #ccc;
+    margin: 10px 0;
+    padding: 10px 0 10px 10px;
+    width: 100%;
+    font-size: 18px;
+    font-weight: lighter;
+}
+
+.wallet input[type="text"]:focus, 
+.wallet select:focus {
+  border-color: 1px solid #ccc;
+  box-shadow: none;
+  outline: 0 none;
+}
+
+/***** Payment Radio ******/
+.wallet .radio-box .radio {
+    padding-left: 20px;
+}
+.wallet .radio-box .radio label {
+    display: inline-block;
+    position: relative;
+    padding-left: 5px;
+    font-size: 14px;
+}
+.wallet .radio-box .radio label::before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    width: 17px;
+    height: 17px;
+    left: 0;
+    margin-left: -20px;
+    border: 1px solid #cccccc;
+    border-radius: 50%;
+    background-color: #fff;
+    -webkit-transition: border 0.15s ease-in-out;
+    -o-transition: border 0.15s ease-in-out;
+    transition: border 0.15s ease-in-out;
+}
+.wallet .radio-box .radio label::after {
+    display: inline-block;
+    position: absolute;
+    content: " ";
+    width: 11px;
+    height: 11px;
+    left: 3px;
+    top: 3px;
+    margin-left: -20px;
+    border-radius: 50%;
+    background-color: #555555;
+    -webkit-transform: scale(0, 0);
+    -ms-transform: scale(0, 0);
+    -o-transform: scale(0, 0);
+    transform: scale(0, 0);
+    -webkit-transition: -webkit-transform 0.1s cubic-bezier(0.8, -0.33, 0.2, 1.33);
+    -moz-transition: -moz-transform 0.1s cubic-bezier(0.8, -0.33, 0.2, 1.33);
+    -o-transition: -o-transform 0.1s cubic-bezier(0.8, -0.33, 0.2, 1.33);
+    transition: transform 0.1s cubic-bezier(0.8, -0.33, 0.2, 1.33);
+}
+.wallet .radio-box .radio input[type="radio"] {
+    opacity: 0;
+}
+.wallet .radio-box .radio input[type="radio"]:checked + label::after {
+    -webkit-transform: scale(1, 1);
+    -ms-transform: scale(1, 1);
+    -o-transform: scale(1, 1);
+    transform: scale(1, 1);
+}
+.wallet .radio-box .radio-primary input[type="radio"] + label::after {
+    background-color: #584938; }
+.wallet .radio-box .radio-primary input[type="radio"]:checked + label::before {
+    border-color: #584938; }
+.wallet .radio-box .radio-primary input[type="radio"]:checked + label::after {
+    background-color: #584938; }
+
+
+.wallet .action-buttons {
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+.wallet .action-buttons .amount_pay {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: #584938;
+    border: 1px solid #584938;
+    display: inline-block;
+    text-transform: capitalize;
+    text-align: center;
+    color: #fff;
+    font-size: 1.1em;
+    cursor: pointer;
+    line-height: 1pc;
+    padding: 6px 75px 8px;
+    margin: 0 6px 0 0;
+    border-radius: 0;
+}
+.wallet .action-buttons .btn.cancel {
+    float: left;
+    background: #ececec;
+    color: #606060;
+    border: 1px solid #ececec;
+    display: inline-block;
+    text-transform: capitalize;
+    text-align: center;
+    font-size: 1.1em;
+    cursor: pointer;
+    line-height: 1pc;
+    padding: 6px 75px 8px;
+    margin: 0 6px 0 0;
+    border-radius: 0;
+}
+.wallet .action-buttons .btn.cancel:hover,
+.wallet .action-buttons .btn.cancel:active,
+.wallet .action-buttons .btn.cancel:focus {
+    text-decoration: none;
+}
+
+.wallet .tx_heading {
+    margin-top: 40px;
+    font-size: 1.5em;
+    font-weight: normal;
+}
+
+#cart_total {
+    min-width: 210px;
+}
+
+#add_amount div.card_placeholder {
+    top: 32px;
+}
