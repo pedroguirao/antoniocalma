@@ -9,7 +9,8 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
         <field name="vat" position="after">
-
+                  <field name="x_inversor" readonly="1"/>
+                  <button string="DNI Validado" type="object" name="marketpay_validate" class="oe_highlight"/>
                   <field name="x_marketpayuser_id" readonly="1"/>
                   <field name="x_marketpaywallet_id" readonly="1"/>
 

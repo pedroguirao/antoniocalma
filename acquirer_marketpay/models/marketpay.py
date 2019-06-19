@@ -93,11 +93,11 @@ class AcquirerMarketpay(models.Model):
 
         # merchant_parameters = self._prepare_merchant_parameters(values)
 
-        # walletid = marketpaydata.x_marketpaywallet_id
-        # userid = marketpaydata.x_marketpayuser_id
+        walletid = marketpaydata.x_marketpaywallet_id
+        userid = marketpaydata.x_marketpayuser_id
 
-        walletid = "9347379"
-        userid = "9347382"
+        #walletid = "9347379"
+        #userid = "9347382"
 
         currency = "EUR"
         amount = str(int(round(values['amount'] * 100)))

@@ -11,7 +11,7 @@
         <field name="currency_id" position="after">
 
                   <field name="marketpayuser_id" readonly="1"/>
-
+                  <button string="Generate Marketpay values" type="object" name="marketpay_validate" class="oe_highlight"/>
 
 
         </field>

@@ -18,10 +18,9 @@ class x_marketpayuser(models.Model):
     x_marketpaywallet_id = fields.Char(string="Marketpay Wallet")
     x_nombreprovincia_id = fields.Char(string="Código Región",related='state_id.name')
     x_codigopais_id = fields.Char(string="Código País",related='country_id.code')
-    x_inversor = fields.Boolean(string="Es Inversor",default=False)
 
     @api.multi
-    def _get_wallet(self):
+    def _get_wallet(self, record):
         # Variables definidas
 
         marketpay_key = "73a4d867-aeec-4e89-a295-64f14dc25ab9"
@@ -52,23 +51,23 @@ class x_marketpayuser(models.Model):
 
         ############# Función Create User and Wallet #####################
 
-        address = swagger_client.Address(address_line1=self.street, address_line2=self.street2,
-                                         city=self.city, postal_code=self.zip,
-                                         country=self.x_codigopais_id, region=self.x_nombreprovincia_id)
+        address = swagger_client.Address(address_line1=record['street'], address_line2=record['street2'],
+                                         city=record['city'], postal_code=record['zip'],
+                                         country=record['x_codigopais_id'], region=record['x_nombreprovincia_id'])
 
         user_natural = swagger_client.UserNaturalPost(address=address)
-        user_natural.email = self.email
-        user_natural.first_name = self.name
-        user_natural.occupation = self.function
-        user_natural.tag = self.comment
-        user_natural.country_of_residence = self.x_codigopais_id
-        user_natural.nationality = self.x_codigopais_id
+        user_natural.email = record['email']
+        user_natural.first_name = record['name']
+        user_natural.occupation = record['function']
+        user_natural.tag = record['comment']
+        user_natural.country_of_residence = record['x_codigopais_id']
+        user_natural.nationality = record['x_codigopais_id']
 
         try:
 
             api_response = apiUser.users_post_natural(user_natural=user_natural)
-            #self.x_marketpayuser_id'] = api_response.id
-            self.x_marketpayuser_id = api_response.id
+            #record['x_marketpayuser_id'] = api_response.id
+            marketpay_user = api_response.id
 
         except ApiException as e:
             print("Exception when calling UsersApi->users_post: %s\n" % e)
@@ -82,49 +81,52 @@ class x_marketpayuser(models.Model):
         try:
 
             api_response = apiWallet.wallets_post(wallet=wallet)
-            #self.x_marketpaywallet_id'] = api_response.id
-            self.x_marketpaywallet_id=api_response.id
-            self.x_inversor = True
+            #record['x_marketpaywallet_id'] = api_response.id
+            marketpay_wallet=api_response.id
 
 
         except ApiException as e:
             print("Exception when calling WalletApi->Wallet_post: %s\n" % e)
 
 
-    @api.multi
-    def marketpay_validate(self):
-        #self. super(x_marketpayuser, self).create(values)
+        marketvals={'marketpayuser':marketpay_user,'marketpaywallet':marketpay_wallet}
+        return  marketvals
 
+    @api.model
+    def create(self, values):
+        record = super(x_marketpayuser, self).create(values)
 
+        if values['is_company'] == True:
 
-            if self.country_id == False:
+            return record
+        else:
+            if record['x_codigopais_id'] == False:
                 raise osv.except_osv(('x_codigopais_id'),
                                      ('El campo pais es obligatorio'))
-            if self.state_id == False:
+            if record['x_nombreprovincia_id'] == False:
                 raise osv.except_osv(('x_nombreprovincia_id'),
                                      ('El campo provincia es obligatorio'))
-
-
-            if self.email == False:
+            if record['email'] == False:
                 raise osv.except_osv(('email'),
                                      ('El campo mail es obligatorio'))
-            if self.city == False:
+            if record['city'] == False:
                 raise osv.except_osv(('city'),
                                      ('El campo ciudad es obligatorio'))
-            if self.street == False:
+            if record['street'] == False:
                 raise osv.except_osv(('street'),
                                      ('El campo calle es obligatorio'))
-            if self.zip == False:
+            if record['zip'] == False:
                 raise osv.except_osv(('zip'),
                                      ('El campo C.P es obligatorio'))
 
-            self._get_wallet()
+            marketpay=self._get_wallet(record)
 
-            #print(marketpay)
+            print(marketpay)
 
+            record['x_marketpayuser_id'] = marketpay['marketpayuser']
+            record['x_marketpaywallet_id'] = marketpay['marketpaywallet']
 
-
-
+        return record
 
 
 

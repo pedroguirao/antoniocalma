@@ -24,7 +24,7 @@ class ProductsCrowd(models.Model):
     premium = fields.Many2one(String='Premium',comodel_name='crowfunding_opciones',domain=('tipo','=','premium'))
     objetivo_crowfunding = fields.Float('Objetivo Crowfunding')
     invertido = fields.Float('Invertido')
-    porcentaje_crowfunding = fields.Float('Porcentaje Crowfunding',compute='_invertido')
+    porcentaje_crowfunding = fields.Float('Porcentaje Crowfunding')
     inversores = fields.Integer('Inversores')
     plazo_inversion = fields.Char('Plazo Inversión')
     rentabilidad_anual = fields.Char('Rentabilidad Anual')

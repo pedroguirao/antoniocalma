@@ -104,7 +104,7 @@ class WebsiteWallet(http.Controller):
 
 
     #@http.route(['/wallet/add/money/transaction'], type='http', auth="user", website=True)
-    @http.route(['/wallet/add/money/quantity'], type='http', auth="user", website=True)
+    @http.route(['/wallet/add/money/quantity'], type='http', auth="user",  website=True)
     def wallet_add_money_txn(self, **post):
 
         user = request.env.user
@@ -112,6 +112,8 @@ class WebsiteWallet(http.Controller):
         PA = request.env['payment.acquirer'].sudo()
         PT = request.env['payment.transaction'].sudo()
         PM = request.env['payment.token'].sudo()
+
+
 
         if post.get('amount') == '':
             return request.redirect("/wallet/add/money")
@@ -124,18 +126,25 @@ class WebsiteWallet(http.Controller):
 
         #add_amount = "%.2f" % float(post.get('amount'))
 
+
+
         add_amount = float(post.get('amount'))
 
         acquirer_id = post.get('payment_acquirer') and int(post.get('payment_acquirer'))
         acquirer = PA.search([('id', '=', acquirer_id)])
 
+
+
         tx = PT.search([
             ('is_wallet_transaction', '=', True), ('wallet_type', '=', 'credit'),
             ('partner_id', '=', partner.id), ('state', '=', 'draft')], limit=1)
+
+
         if tx:
             tx.amount = add_amount
             tx.acquirer_id = acquirer.id
         else:
+
             tx = PT.create({
                 'acquirer_id': acquirer.id,
                 'type': 'form',
@@ -145,8 +154,10 @@ class WebsiteWallet(http.Controller):
                 'partner_country_id': partner.country_id.id,
                 'is_wallet_transaction': True,
                 'wallet_type': 'credit',
-                'reference': request.env['payment.transaction'].get_next_wallet_reference(),
+                'reference': request.env['payment.transaction'].sudo().get_next_wallet_reference(),
             })
+
+
 
         acquirers = request.env['payment.acquirer'].sudo().search([
             ('website_published', '=', True), ('is_wallet_acquirer', '=', True)])
@@ -155,11 +166,16 @@ class WebsiteWallet(http.Controller):
         partner = request.env.user.partner_id
         stored_card = PM.search([('partner_id', '=', partner.id)], order="id desc", limit=1)
 
+
+
         amount = add_amount
         values = dict()
         values['form_acquirers'] = [acq for acq in acquirers if acq.payment_flow == 'form' and acq.view_template_id]
         currency_id = request.website.get_current_pricelist().currency_id.id
         base_url = request.env['ir.config_parameter'].sudo().get_param('web.base.url')
+
+
+
         for acq in values['form_acquirers']:
            acq.form = acq.with_context(
                submit_class='btn btn-primary', submit_txt=_('Add Money')).sudo().render(
@@ -171,6 +187,8 @@ class WebsiteWallet(http.Controller):
                    'return_url': base_url + '/wallet/payment/validate',
                }
            )
+
+
         payflow = request.env['payment.acquirer'].sudo().search([
             ('provider', '=', 'payflow_pro'), ('is_wallet_acquirer', '=', True)])
         flag = False

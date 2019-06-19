@@ -26,11 +26,9 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        'views/shop_inh_product_view.xml',
         'views/products_template_crowf_view.xml',
         'views/company_marketpay_view.xml',
         'views/partner_marketpay_view.xml',
-        'views/templates.xml',
     ],
     # only loaded in demonstration mode
     'installable': True,

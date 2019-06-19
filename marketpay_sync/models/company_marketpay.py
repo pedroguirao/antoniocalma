@@ -22,7 +22,7 @@ class marketpay_company(models.Model):
 
 
     @api.multi
-    def _get_wallet(self,record):
+    def _get_wallet(self):
         # Variables definidas
 
         marketpay_key = "73a4d867-aeec-4e89-a295-64f14dc25ab9"
@@ -53,53 +53,53 @@ class marketpay_company(models.Model):
 
         ############# Función Create User and Wallet #####################
 
-        address = swagger_client.Address(address_line1=record['street'], address_line2=record['street2'],
-                                         city=record['city'], postal_code=record['zip'],
-                                         country=record['x_codigopais_id'], region=record['x_nombreprovincia_id'])
+        address = swagger_client.Address(address_line1=self.street, address_line2=self.street2,
+                                         city=self.city, postal_code=self.zip,
+                                         country=self.x_codigopais_id, region=self.x_nombreprovincia_id)
 
         user_natural = swagger_client.UserNaturalPost(address=address)
-        user_natural.email = record['email']
-        user_natural.first_name = record['name']
-        # user_natural.occupation = record['function']
-        # user_natural.tag = record['comment']
-        user_natural.country_of_residence = record['x_codigopais_id']
-        user_natural.nationality = record['x_codigopais_id']
+        user_natural.email = self.email
+        user_natural.first_name = self.name
+        # user_natural.occupation = self.function']
+        # user_natural.tag = self.comment']
+        user_natural.country_of_residence = self.x_codigopais_id
+        user_natural.nationality = self.x_codigopais_id
 
         try:
 
             api_response = apiUser.users_post_natural(user_natural=user_natural)
-            wallet_id = api_response.id
-            return wallet_id
+            self.marketpayuser_id = api_response.id
+
 
         except ApiException as e:
             print("Exception when calling UsersApi->users_post: %s\n" % e)
 
-    @api.model
-    def create(self, values):
-        record = super(marketpay_company, self).create(values)
+    @api.multi
+    def marketpay_validate(self):
 
-        if record['x_codigopais_id'] == False:
+        #self. super(marketpay_company, self).create(values)
+
+        if self.x_codigopais_id == False:
             raise osv.except_osv(('x_codigopais_id'),
                                  ('El campo pais es obligatorio'))
-        if record['x_nombreprovincia_id'] == False:
+        if self.x_nombreprovincia_id == False:
             raise osv.except_osv(('x_nombreprovincia_id'),
                                  ('El campo provincia es obligatorio'))
-        if record['email'] == False:
+        if self.email == False:
             raise osv.except_osv(('email'),
                                  ('El campo mail es obligatorio'))
-        if record['city'] == False:
+        if self.city == False:
             raise osv.except_osv(('city'),
                                  ('El campo ciudad es obligatorio'))
-        if record['street'] == False:
+        if self.street == False:
             raise osv.except_osv(('street'),
                                  ('El campo calle es obligatorio'))
-        if record['zip'] == False:
+        if self.zip == False:
             raise osv.except_osv(('zip'),
                                  ('El campo C.P es obligatorio'))
 
-        wallet = self._get_wallet(record)
-        record['marketpayuser_id'] = wallet
+        self._get_wallet()
+        #self.marketpayuser_id'] = wallet
 
 
-        return record
-
+        #return self.
