@@ -118,6 +118,19 @@ class AcquirerMarketpay(models.Model):
         try:
 
             api_response = apiPayin.pay_ins_redsys_redsys_post_payment_by_web(redsys_pay_in=redsys_pay)
+            pay_in_id = api_response.pay_in_id
+            self.x_redsys_url = api_response.url
+            marketpay_values.update({
+
+            'Ds_MerchantParameters': api_response.ds_merchant_parameters,
+            'Ds_SignatureVersion': api_response.ds_signature_version,
+            'Ds_Signature': api_response.ds_signature,
+            })
+            PT = request.env['payment.transaction'].sudo()
+            tx = PT.search([
+            ('is_wallet_transaction', '=', True), ('wallet_type', '=', 'credit'),
+            ('partner_id', '=', marketpaydata.id), ('state', '=', 'draft')], limit=1)
+            tx.marketpay_txnid = pay_in_id
 
 
         except ApiException as e:
@@ -125,28 +138,28 @@ class AcquirerMarketpay(models.Model):
 
         #print(api_response)
 
-        pay_in_id = api_response.pay_in_id
-        self.x_redsys_url = api_response.url
+        #pay_in_id = api_response.pay_in_id
+        #self.x_redsys_url = api_response.url
 
 
-        PT = request.env['payment.transaction'].sudo()
-        tx = PT.search([
-            ('is_wallet_transaction', '=', True), ('wallet_type', '=', 'credit'),
-            ('partner_id', '=', marketpaydata.id), ('state', '=', 'draft')], limit=1)
+        #PT = request.env['payment.transaction'].sudo()
+        #tx = PT.search([
+        #    ('is_wallet_transaction', '=', True), ('wallet_type', '=', 'credit'),
+        #    ('partner_id', '=', marketpaydata.id), ('state', '=', 'draft')], limit=1)
 
 
-        tx.marketpay_txnid = pay_in_id
+        #tx.marketpay_txnid = pay_in_id
 
         #print(tx)
 
-        marketpay_values.update({
+        #marketpay_values.update({
 
-            'Ds_MerchantParameters': api_response.ds_merchant_parameters,
-            'Ds_SignatureVersion': api_response.ds_signature_version,
-            'Ds_Signature': api_response.ds_signature,
+        #    'Ds_MerchantParameters': api_response.ds_merchant_parameters,
+        #    'Ds_SignatureVersion': api_response.ds_signature_version,
+        #    'Ds_Signature': api_response.ds_signature,
 
 
-        })
+        #})
 
         return marketpay_values
 

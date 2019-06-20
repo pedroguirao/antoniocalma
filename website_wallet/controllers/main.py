@@ -231,25 +231,49 @@ class WebsiteWallet(http.Controller):
             print(api_response)
 
             print(api_response.execution_date)
+            if api_response.status == "FAILED":
+                error = 'Received unrecognized RESULT for PayFlow Pro ' \
+                    'payment %s: %s, set as error' % (tx.reference, api_response.result_message)
+                _logger.info(error)
+                tx.state = 'error'
+                tx.state_message = error
+
+            if api_response.status == "SUCCEEDED":
+                _logger.info('%s Marketpay payment for tx %s: set as done' %
+                         (tx.reference, api_response.result_message))
+
+                tx.state = 'done'
+                tx.date = datetime.now()
+
+                #tx.s2s_feedback(data, 'payflow_pro')
+
+                #vals = {
+                #  'tx_state': tx.state.capitalize(),
+                #  'tx_amount': tx.amount,
+                #  'tx_acquirer': tx.acquirer_id,
+                #  'tx_reference': tx.acquirer_reference,
+                #  'tx_time': tx.date,
+                #  'wallet_bal': request.env.user.partner_id.wallet_balance,
+                #} 
 
         except ApiException as e:
             print("Exception when calling PayInsRedsysApi->pay_ins_redsys_redsys_get_payment: %s\n" % e)
 
         #return request.redirect("/wallet/add/money")
 
-        if api_response.status == "FAILED":
-            error = 'Received unrecognized RESULT for PayFlow Pro ' \
-                    'payment %s: %s, set as error' % (tx.reference, api_response.result_message)
-            _logger.info(error)
-            tx.state = 'error'
-            tx.state_message = error
+        #if api_response.status == "FAILED":
+        #    error = 'Received unrecognized RESULT for PayFlow Pro ' \
+        #            'payment %s: %s, set as error' % (tx.reference, api_response.result_message)
+        #    _logger.info(error)
+        #    tx.state = 'error'
+        #    tx.state_message = error
 
-        if api_response.status == "SUCCEEDED":
-            _logger.info('%s Marketpay payment for tx %s: set as done' %
-                         (tx.reference, api_response.result_message))
+        #if api_response.status == "SUCCEEDED":
+        #    _logger.info('%s Marketpay payment for tx %s: set as done' %
+        #                 (tx.reference, api_response.result_message))
 
-            tx.state = 'done'
-            tx.date = datetime.now()
+        #    tx.state = 'done'
+        #    tx.date = datetime.now()
 
         #tx.s2s_feedback(data, 'payflow_pro')
 
