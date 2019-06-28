@@ -13,17 +13,9 @@
                   <button string="DNI Validado" type="object" name="marketpay_validate" class="oe_highlight"/>
                   <field name="x_marketpayuser_id" readonly="1"/>
                   <field name="x_marketpaywallet_id" readonly="1"/>
-
+                  <field name="x_dni_file" widget="image"/>
 
         </field>
         </field>
     </record>
-
-
-
-
-
 </odoo>
-
-
-

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <data>
+
+        <template id="portal_my_details_inh" inherit_id="portal.portal_my_details" customize_show="True" name="portal_my_details_inh">
+            <xpath expr='//div[@class="row"]' position='after'>
+                <div class="row" >
+                    <div t-attf-class="form-group col-xl-6">
+                        <label class="col-form-label" for="x_dni_file">Foto DNI</label>
+                        <input type="file" name="x_dni_file" widget="image" accept="image/*" t-attf-class="form-control" t-att-value="x_dni_file or partner.x_dni_file"/>
+
+                    </div>
+                </div>
+            </xpath>
+
+        </template>
+    </data>
+</odoo>

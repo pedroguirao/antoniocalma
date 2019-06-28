@@ -19,6 +19,7 @@ class x_marketpayuser(models.Model):
     x_nombreprovincia_id = fields.Char(string="Código Región",related='state_id.name')
     x_codigopais_id = fields.Char(string="Código País",related='country_id.code')
     x_inversor = fields.Boolean(string="Es Inversor",default=False)
+    x_dni_file = fields.Binary(string='Foto DNI')
 
     @api.multi
     def _get_wallet(self):

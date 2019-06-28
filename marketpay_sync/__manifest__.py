@@ -29,6 +29,7 @@
         'views/products_template_crowf_view.xml',
         'views/company_marketpay_view.xml',
         'views/partner_marketpay_view.xml',
+        'views/portal_templates_inh.xml',
     ],
     # only loaded in demonstration mode
     'installable': True,
