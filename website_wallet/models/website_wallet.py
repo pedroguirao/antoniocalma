@@ -153,7 +153,6 @@ class SaleOrder(models.Model):
 
     @api.multi
     def action_wallet_pay(self):
-        print("################pago por wallet desde funcion##################")
         for order in self.filtered(lambda l: l.state in ['draft', 'sent']):
             #if order.partner_wallet_balance >= order.amount_total:
                 #tx_amount = order.amount_total
@@ -162,7 +161,7 @@ class SaleOrder(models.Model):
             #if order.partner_wallet_balance < order.amount_total:
             #    tx_amount = order.partner_wallet_balance
             if order.partner_wallet_balance < order.order_line[0].product_uom_qty:
-                raise osv.except_osv(('Autorización'), ('Código o Número de autorización deffinido'))
+                raise osv.except_osv(('Autorización'), ('Código o Número de autorización definido'))
                 raise UserError(_('No tienes suficientes fondos. Por favor adquiere fondos para tu wallet.'))
 
             if order.wallet_txn_id:

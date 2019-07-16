@@ -1,19 +1,14 @@
 {
-    'name': "Calma_grid",
+    'name': "calma_investment_flow",
     'summary': """
-        Conjunto de cambios visuales para los productos, grid, ....""",
-    'description': """  
-    """,
+        Proceso de inversión para crowfunding""",
     'author': "Pedro Guirao",
     'license': 'AGPL-3',
     'website': "https://ingenieriacloud.com",
     'category': 'Tools',
-    'version': '1.0',
-    'depends': ['sale_management','website_sale','contacts'],
+    'version': '12.0.1.0.0',
+    'depends': ['sale_management','website_sale'],
     'data': [
-        'views/shop_inh_product_view.xml',
-        'views/template_inh_cart.xml',
-        'views/templates.xml',
     ],
     'installable': True,
     'application': True,

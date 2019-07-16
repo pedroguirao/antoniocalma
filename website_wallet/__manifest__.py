@@ -18,7 +18,7 @@
     'description': 'Website wallet for faster checkout process',
     'category': 'Ecommerce',
     'version': '1.0',
-    'author': 'YO MISMO.',
+    'author': '',
     'website': 'http://www.kanakinfosystems.com',
     'depends': ['website_sale', 'payment_paypal', 'website_payment'],
     'data': [

@@ -39,7 +39,6 @@
           </t>
         </a>
         <a href="/wallet/transaction/history" role="menuitem" class="dropdown-item" t-if="website.user_id != user_id">Wallet Transaction History</a>
-        <a href="/wallet/add/account" role="menuitem" class="dropdown-item" t-if="website.user_id != user_id">Cuentas bancarias</a>
       </xpath>
     </template>
 

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import requests
 import base64
 import json
@@ -10,10 +8,8 @@ from odoo.exceptions import ValidationError
 from odoo.osv import osv
 
 
-
 class marketpay_company(models.Model):
     _inherit = 'res.company'
-
 
     marketpayuser_id= fields.Char(string="Marketpay ID")
     #marketpaywallet_id = fields.Char(string="Marketpay Wallet")
@@ -23,13 +19,13 @@ class marketpay_company(models.Model):
 
     @api.multi
     def _get_wallet(self):
-        # Variables definidas
+        # Marketpay vars
 
         marketpay_key = "73a4d867-aeec-4e89-a295-64f14dc25ab9"
         marketpay_secret = "kFNm3CQU-ynHaM5g4OZ4MsSxOqmM85j4lgOVLkCgQYY="
         marketpay_domain = "https://api-sandbox.marketpay.io"
 
-        # Configuración CLiente
+        # CLient config
 
         token_url = 'https://api-sandbox.marketpay.io/v2.01/oauth/token'
         key = 'Basic %s' % base64.b64encode(
@@ -51,7 +47,7 @@ class marketpay_company(models.Model):
         api_instance = swagger_client.Configuration.set_default(config)
         apiUser = swagger_client.UsersApi()
 
-        ############# Función Create User and Wallet #####################
+        ############# Funcition Create User and Wallet #####################
 
         address = swagger_client.Address(address_line1=self.street, address_line2=self.street2,
                                          city=self.city, postal_code=self.zip,
@@ -77,8 +73,6 @@ class marketpay_company(models.Model):
     @api.multi
     def marketpay_validate(self):
 
-        #self. super(marketpay_company, self).create(values)
-
         if self.x_codigopais_id == False:
             raise osv.except_osv(('x_codigopais_id'),
                                  ('El campo pais es obligatorio'))
@@ -99,7 +93,3 @@ class marketpay_company(models.Model):
                                  ('El campo C.P es obligatorio'))
 
         self._get_wallet()
-        #self.marketpayuser_id'] = wallet
-
-
-        #return self.
