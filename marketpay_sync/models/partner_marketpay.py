@@ -25,9 +25,9 @@ class x_marketpayuser(models.Model):
     x_name_dni_back = fields.Char ('Nombre Archivo')
     x_dni_preview = fields.Binary('Vista Previa',compute='_get_preview')
 
-    @api.depends('x_dni_file')
+    @api.depends('x_dni_front')
     def _get_preview(self):
-        self.x_dni_file_preview = self.x_dni_front
+        self.x_dni_preview = self.x_dni_front
 
     @api.multi
     def _kyc_docs(self):
@@ -47,6 +47,7 @@ class x_marketpayuser(models.Model):
             # Uploads a new document and uploads a file. If the document already exists it will be replaced.
             api_response = apikyc.kyc_post_document(document,fname,user_id)
             os.unlink(fname)
+
 
         except ApiException as e:
             raise osv.except_osv(('DNI'),
@@ -75,7 +76,7 @@ class x_marketpayuser(models.Model):
         return
 
     @api.multi
-    def _kyc_validation(self,api_instance):
+    def _kyc_validation(self):
 
         # create an instance of the API class
         user_id = self.x_marketpayuser_id # int | The Id of a user
@@ -99,7 +100,7 @@ class x_marketpayuser(models.Model):
             # Update a Natural User Kyc Data
             api_response = apikyc.kyc_post_natural(user_id,
                                                    kyc_user_natural=kyc_user_natural)
-            print(api_response)
+            self.x_inversor = True
         except ApiException as e:
             raise osv.except_osv(('KyC'),
                                  ('Error al validar Usuario por favor '
@@ -150,7 +151,7 @@ class x_marketpayuser(models.Model):
         try:
             api_response = apiWallet.wallets_post(wallet=wallet)
             self.x_marketpaywallet_id = api_response.id
-            self.x_inversor = True
+
         except ApiException as e:
             raise osv.except_osv(('Marketpay Wallet'),
                                  ('Error al Registrar Wallet por favor '
@@ -222,6 +223,9 @@ class x_marketpayuser(models.Model):
     @api.multi
     def marketpay_validate(self):
 
+        if self.name == False:
+            raise osv.except_osv(('Nombre'),
+                                 ('El campo Nombre es obligatorio'))
         if self.country_id == False:
             raise osv.except_osv(('x_codigopais_id'),
                                  ('El campo pais es obligatorio'))
@@ -243,10 +247,10 @@ class x_marketpayuser(models.Model):
         if self.vat == False:
             raise osv.except_osv(('vat'),
                                  ('El campo vat es obligatorio'))
-        if self.x_dni_file == None:
+        if self.x_dni_front == None:
             raise osv.except_osv(('DNI'),
                                  ('El campo DNI Anverso es obligatorio'))
-        if self.x_dni_file2 == None:
+        if self.x_dni_back == None:
             raise osv.except_osv(('DNI'),
                                  ('El campo DNI Reverso es obligatorio'))
 
@@ -280,7 +284,11 @@ class x_marketpayuser(models.Model):
         # self._updateuser()
         if self.x_marketpayuser_id == False:
             self._get_id()
+        if self.x_marketpaywallet_id == False:
             self._get_wallet()
+        if self.x_inversor == False:
             self._kyc_validation()
             self._kyc_docs()
+        else:
+            self._updateuser()
 

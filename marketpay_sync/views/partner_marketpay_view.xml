@@ -12,9 +12,9 @@
                 <page name="marketpay" string="MarketPay">
                     <group>
                         <group>
+
                             <button string="DNI Validado" type="object"
                                     name="marketpay_validate" class="oe_highlight"/>
-
                         </group>
                         <group><field name="x_inversor" readonly="1"/></group>
                         <group>
@@ -31,9 +31,6 @@
                             <field name="x_marketpaywallet_id" readonly="1"/>
                             <field colspan="1" name="x_dni_preview"
                                    widget="image" />
-
-
-
                         </group>
                     </group>
                 </page>
