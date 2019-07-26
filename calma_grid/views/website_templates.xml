@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <odoo>
+
     <template id="calma_sale_confirmation"
               inherit_id="website_sale.confirmation"
               customize_show="True" name="calma_sale_confirmation">
@@ -8,7 +8,6 @@
             <div id="wrap">
                 <div class="container oe_website_sale py-2">
                     <h1><span>Order</span> <em t-field="order.name" /> <t t-if="order.state == 'sale'"><span>Confirmed</span></t></h1>
-
                     <div class="row">
                         <div class="col-12 col-xl">
                             <div class="oe_cart">
@@ -68,7 +67,6 @@
             </div>
         </xpath>
     </template>
-
     <template id="website_sale_products_inh" inherit_id="website_sale.products" customize_show="True" name="website_sale_products_inh">
         <xpath expr='//table[@width="100%"]' position='replace'>
             <table width="100%" >
@@ -97,11 +95,9 @@
             </table>
         </xpath>
     </template>
-
     <template id="website_sale_products_item_inh" inherit_id="website_sale.products_item" customize_show="True" name="website_sale_products_item_inh">
         <xpath expr="//div[@itemscope=&quot;itemscope&quot;]" position="replace">
             <div itemscope="itemscope" itemtype="http://schema.org/Product">
-
                 <div class="container-img-shop" style="margin: 0; padding: 0; border: 1;">
                     <img style="100%">
                         <span overflow="auto" display="inline-block;" t-field="product.image" t-options="{'widget': 'image', 'resize':'400x400'}"/>
@@ -167,7 +163,6 @@
                                     <td align="center">
                                         <p>Plazo: <span t-esc="product.plazo_inversion"> meses </span></p>
                                     </td>
-
                                 </tr>
                             </table>
                             <a itemprop="url" t-att-href="product_href">
@@ -182,17 +177,6 @@
             </div>
         </xpath>
     </template>
-
-    <!--<template id="website_sale_products_inh_add_to_cart"
-              inherit_id="website_sale.product" customize_show="True"
-              name="website_sale_products_inh_add_to_cart">
-        <xpath expr='//div[@class="js_product js_main_product"]/a'
-               position='replace'>
-            <a role="button" id="add_to_cart"
-               class="btn btn-primary btn-lg mt8 js_check_product a-submit" href="#">Invertir</a>
-        </xpath>
-    </template>-->
-
     <template id="website_sale_inh_cart_lines"
               inherit_id="website_sale.cart_lines" customize_show="True"
               name="website_sale_inh_cart_lines">
@@ -242,14 +226,6 @@
             </div>
         </xpath>
     </template>
-
-    <!--<template id="header_calma" inherit_id="website_sale.header"
-              name="Header Shop My Cart Link Calma">
-        <xpath expr="//header//ul[@id='top_menu']/li[@id='my_cart']"
-               position="replace">
-        </xpath>
-    </template>-->
-
     <template id="website_sale_products_inh_payment"
               inherit_id="website_sale.payment" customize_show="True"
               name="website_sale_products_inh_payment">
@@ -281,7 +257,6 @@
             </div>
         </xpath>
     </template>
-
     <template id="website_sale_product_form_inh"
               inherit_id="website_sale.product" customize_show="True" name="website_sale_product_form_inh">
     <xpath expr='//div[@id="product_details"]' position='replace'>
@@ -398,13 +373,12 @@
             <hr/>
         </div>
     </xpath>
-
     <template id="website_sale_product_quantity_inh"
               inherit_id="website_sale.product_quantity" customize_show="True"
               name="website_sale_product_quantity_inh">
         <xpath expr='//div[@class="css_quantity input-group oe_website_spinner"]'
                position='replace'>
-
         </xpath>
     </template>
+
 </odoo>
