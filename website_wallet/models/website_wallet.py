@@ -153,6 +153,7 @@ class SaleOrder(models.Model):
 
     @api.multi
     def action_wallet_pay(self):
+        print("################pago por wallet desde funcion##################")
         for order in self.filtered(lambda l: l.state in ['draft', 'sent']):
             #if order.partner_wallet_balance >= order.amount_total:
                 #tx_amount = order.amount_total
@@ -161,7 +162,7 @@ class SaleOrder(models.Model):
             #if order.partner_wallet_balance < order.amount_total:
             #    tx_amount = order.partner_wallet_balance
             if order.partner_wallet_balance < order.order_line[0].product_uom_qty:
-                raise osv.except_osv(('Autorización'), ('Código o Número de autorización definido'))
+                raise osv.except_osv(('Autorización'), ('Código o Número de autorización deffinido'))
                 raise UserError(_('No tienes suficientes fondos. Por favor adquiere fondos para tu wallet.'))
 
             if order.wallet_txn_id:
@@ -194,6 +195,7 @@ class SaleOrder(models.Model):
     @api.multi
     def action_marketpay_wallet(self,order):
         ######## Obtener Wallet de cada Producto ################
+        print(order.order_line[0].product_id.project_wallet)
         credited_wallet_id = order.order_line[0].product_id.project_wallet
         ######## Obtener Acquirer Marketpay #################
         acquirer = self.env['payment.acquirer'].sudo().search([
@@ -224,6 +226,12 @@ class SaleOrder(models.Model):
 
         ############ trae los valores del partner ############
 
+        # walletid = marketpaydata.x_marketpaywallet_id
+        # userid = marketpaydata.x_marketpayuser_id
+
+        walletid = "9347379"
+        userid = "9347382"
+
         currency = "EUR"
         amount = str(int(round(order.order_line[0].product_uom_qty * 100)))
         print(amount)
@@ -237,8 +245,8 @@ class SaleOrder(models.Model):
         fees = swagger_client.Money(amount=amountfee, currency=currency)
         debited_founds = swagger_client.Money(amount=amount, currency=currency)
 
-        credited_user_id = order.order_line[0].product_id.company_id.marketpayuser_id
-        debited_wallet_id= order.partner_id.x_marketpaywallet_id
+        credited_user_id = "9347382"
+        debited_wallet_id= "9347379"
 
 
         transfer = swagger_client.TransferPost(credited_user_id=credited_user_id,debited_funds=debited_founds,

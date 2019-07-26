@@ -1,7 +1,9 @@
-from odoo import fields, http, tools, _
+from odoo import _, fields, http, tools
 from odoo.http import request
-import json
 from odoo.addons.website_sale.controllers.main import WebsiteSale
+
+import json
+
 
 class CustomWebsiteSale(WebsiteSale):
 
@@ -38,7 +40,7 @@ class CustomWebsiteSale(WebsiteSale):
             add_qty=add_qty,
             set_qty=set_qty,
             product_custom_attribute_values=product_custom_attribute_values,
-            no_variant_attribute_values=no_variant_attribute_values
+            no_variant_attribute_values=no_variant_attribute_values,
         )
         return request.redirect("/shop/payment")
 
@@ -52,11 +54,11 @@ class CustomWebsiteSale(WebsiteSale):
          - take a sale.order id, because we request a sale.order and are not
            session dependant anymore
         """
-
         sale_order_id = request.session.get('sale_last_order_id')
         print(sale_order_id)
         if sale_order_id:
             order = request.env['sale.order'].sudo().browse(sale_order_id)
-            return request.render("calma_grid.confirmation", {'order': order})
+            return request.render("calma_grid.calma_sale_confirmation",
+                                  {'order': order})
         else:
             return request.redirect('/shop')

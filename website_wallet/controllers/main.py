@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import logging
 import pprint
@@ -104,7 +103,7 @@ class WebsiteWallet(http.Controller):
 
 
     #@http.route(['/wallet/add/money/transaction'], type='http', auth="user", website=True)
-    @http.route(['/wallet/add/money/quantity'], type='http', auth="user",  website=True)
+    @http.route(['/wallet/add/money/quantity'], type='http', auth="user", website=True)
     def wallet_add_money_txn(self, **post):
 
         user = request.env.user
@@ -113,7 +112,7 @@ class WebsiteWallet(http.Controller):
         PT = request.env['payment.transaction'].sudo()
         PM = request.env['payment.token'].sudo()
 
-
+        print("1")
 
         if post.get('amount') == '':
             return request.redirect("/wallet/add/money")
@@ -126,25 +125,20 @@ class WebsiteWallet(http.Controller):
 
         #add_amount = "%.2f" % float(post.get('amount'))
 
-
-
         add_amount = float(post.get('amount'))
-
+        print("2")
         acquirer_id = post.get('payment_acquirer') and int(post.get('payment_acquirer'))
         acquirer = PA.search([('id', '=', acquirer_id)])
-
-
-
+        print("3")
         tx = PT.search([
             ('is_wallet_transaction', '=', True), ('wallet_type', '=', 'credit'),
             ('partner_id', '=', partner.id), ('state', '=', 'draft')], limit=1)
-
-
         if tx:
+            print("4")
             tx.amount = add_amount
             tx.acquirer_id = acquirer.id
         else:
-
+            print("5")
             tx = PT.create({
                 'acquirer_id': acquirer.id,
                 'type': 'form',
@@ -154,11 +148,12 @@ class WebsiteWallet(http.Controller):
                 'partner_country_id': partner.country_id.id,
                 'is_wallet_transaction': True,
                 'wallet_type': 'credit',
-                'reference': request.env['payment.transaction'].sudo().get_next_wallet_reference(),
+                'reference': request.env[
+                    'payment.transaction'].sudo().get_next_wallet_reference(
+
+                ),
             })
-
-
-
+        print("3")
         acquirers = request.env['payment.acquirer'].sudo().search([
             ('website_published', '=', True), ('is_wallet_acquirer', '=', True)])
 
@@ -166,16 +161,11 @@ class WebsiteWallet(http.Controller):
         partner = request.env.user.partner_id
         stored_card = PM.search([('partner_id', '=', partner.id)], order="id desc", limit=1)
 
-
-
         amount = add_amount
         values = dict()
         values['form_acquirers'] = [acq for acq in acquirers if acq.payment_flow == 'form' and acq.view_template_id]
         currency_id = request.website.get_current_pricelist().currency_id.id
         base_url = request.env['ir.config_parameter'].sudo().get_param('web.base.url')
-
-
-
         for acq in values['form_acquirers']:
            acq.form = acq.with_context(
                submit_class='btn btn-primary', submit_txt=_('Add Money')).sudo().render(
@@ -187,8 +177,6 @@ class WebsiteWallet(http.Controller):
                    'return_url': base_url + '/wallet/payment/validate',
                }
            )
-
-
         payflow = request.env['payment.acquirer'].sudo().search([
             ('provider', '=', 'payflow_pro'), ('is_wallet_acquirer', '=', True)])
         flag = False
@@ -231,49 +219,25 @@ class WebsiteWallet(http.Controller):
             print(api_response)
 
             print(api_response.execution_date)
-            if api_response.status == "FAILED":
-                error = 'Received unrecognized RESULT for PayFlow Pro ' \
-                    'payment %s: %s, set as error' % (tx.reference, api_response.result_message)
-                _logger.info(error)
-                tx.state = 'error'
-                tx.state_message = error
-
-            if api_response.status == "SUCCEEDED":
-                _logger.info('%s Marketpay payment for tx %s: set as done' %
-                         (tx.reference, api_response.result_message))
-
-                tx.state = 'done'
-                tx.date = datetime.now()
-
-                #tx.s2s_feedback(data, 'payflow_pro')
-
-                #vals = {
-                #  'tx_state': tx.state.capitalize(),
-                #  'tx_amount': tx.amount,
-                #  'tx_acquirer': tx.acquirer_id,
-                #  'tx_reference': tx.acquirer_reference,
-                #  'tx_time': tx.date,
-                #  'wallet_bal': request.env.user.partner_id.wallet_balance,
-                #} 
 
         except ApiException as e:
             print("Exception when calling PayInsRedsysApi->pay_ins_redsys_redsys_get_payment: %s\n" % e)
 
         #return request.redirect("/wallet/add/money")
 
-        #if api_response.status == "FAILED":
-        #    error = 'Received unrecognized RESULT for PayFlow Pro ' \
-        #            'payment %s: %s, set as error' % (tx.reference, api_response.result_message)
-        #    _logger.info(error)
-        #    tx.state = 'error'
-        #    tx.state_message = error
+        if api_response.status == "FAILED":
+            error = 'Received unrecognized RESULT for PayFlow Pro ' \
+                    'payment %s: %s, set as error' % (tx.reference, api_response.result_message)
+            _logger.info(error)
+            tx.state = 'error'
+            tx.state_message = error
 
-        #if api_response.status == "SUCCEEDED":
-        #    _logger.info('%s Marketpay payment for tx %s: set as done' %
-        #                 (tx.reference, api_response.result_message))
+        if api_response.status == "SUCCEEDED":
+            _logger.info('%s Marketpay payment for tx %s: set as done' %
+                         (tx.reference, api_response.result_message))
 
-        #    tx.state = 'done'
-        #    tx.date = datetime.now()
+            tx.state = 'done'
+            tx.date = datetime.now()
 
         #tx.s2s_feedback(data, 'payflow_pro')
 
@@ -427,15 +391,24 @@ class PayflowProController(http.Controller):
 class WebsiteSale(WebsiteSale):
     @http.route(['/shop/wallet/pay'], type='http', auth="public", website=True)
     def shop_wallet_pay(self, **post):
+        print("#########PAGO POR WALLET############")
         order = request.website.sale_get_order()
         if not order:
-            return request.redirect('/shop')
+            return request.redirect('/shop/cart')
 
         if order.wallet_txn_id:
             return request.redirect('shop/payment')
+
+        print(order.wallet_txn_id)
+        print(order)
         res = order.action_wallet_pay()
+        print(res)
         #if res and order.wallet_txn_id.amount == round(order.amount_total, 2):
         if res and order.wallet_txn_id.amount == round(order.order_line[0].product_uom_qty, 2):
+            # Traspasar fondos del wallet del usuario al wallet del proyecto
+
+
+
             # Order Confirmation Page
             order.wallet_txn_id.sudo().state = 'done'
             tx = order.wallet_txn_id
