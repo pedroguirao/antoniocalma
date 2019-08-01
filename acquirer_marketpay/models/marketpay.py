@@ -129,10 +129,11 @@ class PaymentAcquirer(models.Model):
         try:
             api_response = apiPayin.pay_ins_redsys_redsys_post_payment_by_web(
                 redsys_pay_in=redsys_pay)
+            pay_in_id = api_response.pay_in_id
+            self.x_redsys_url = api_response.url
+
         except ApiException as e:
             print(_("Exception when calling UsersApi->users_post: %s\n" % e))
-        pay_in_id = api_response.pay_in_id
-        self.x_redsys_url = api_response.url
 
         PT = request.env['payment.transaction'].sudo()
         tx = PT.search([
